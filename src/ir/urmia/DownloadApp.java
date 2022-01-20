@@ -12,9 +12,9 @@ public class DownloadApp {
         String address = in.nextLine();
 
         System.out.println("Enter File Name:");
-        String fileName = in.nextLine();
+        String fileName = AppContext.getDownloadPath() + in.nextLine();
 
-        FileDownloader fileDownloader = new FileDownloader(fileName, address,5);
+        FileDownloader fileDownloader = new FileDownloader(fileName, address, AppContext.getTheadNumbers());
         try {
             fileDownloader.downloadFile();
         } catch (IOException e) {
@@ -22,8 +22,7 @@ public class DownloadApp {
         }
 
         WhileMark:
-        while (true)
-        {
+        while (true) {
             System.out.println("""
                     0.Exit
                     1.Pause
@@ -31,7 +30,7 @@ public class DownloadApp {
                     Enter Your choice:
                     """);
             int option = in.nextInt();
-            switch (option){
+            switch (option) {
                 case 0:
                     break WhileMark;
                 case 1:
