@@ -5,19 +5,20 @@ import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
 
 public class FileDownloader {
 
     private ThreadGroup threadGroup;
-    //    private ThreadPoolExecutor executor;
+    private ExecutorService executor;
     private String fileName;
     private String address;
     private int threadCount;
     private boolean isPaused = false;
     private volatile int downloaded = 0;
 
-    public FileDownloader(/*ThreadPoolExecutor executor, */String fileName, String address, int threadCount) {
-        /*this.executor = executor;*/
+    public FileDownloader(String fileName, String address, int threadCount, ExecutorService executorService) {
+        this.executor = executorService;
         this.fileName = fileName;
         this.address = address;
         this.threadCount = threadCount;
@@ -27,6 +28,10 @@ public class FileDownloader {
         downloaded++;
 
         System.out.println("downloaded " + downloaded + "/" + threadCount);
+
+        if (downloaded == threadCount) {
+            System.out.println("Download Completed!");
+        }
     }
 
     public synchronized void pause() {
@@ -52,8 +57,6 @@ public class FileDownloader {
 
             //Get the total size of File Bytes
             int fileLength = conn.getContentLength();
-            String headerField = conn.getHeaderField("content-disposition");
-            System.out.println(headerField);
 
 
             System.out.println("Total file size: " + fileLength / 1024 / 1024 + "MB, " + fileLength + "B");
@@ -61,8 +64,9 @@ public class FileDownloader {
             if (code == 200) {
                 //Allocate "average" download bytes per thread
                 int blockSize = fileLength / threadCount;
+
                 //Create a random access stream to locally occupy files
-                new RandomAccessFile(fileName, "rw");
+//                new RandomAccessFile(fileName, "rw").close();
 
                 //Important: assume that the file is only 10 bytes, download it in 3 threads, and understand the for loop code
 
@@ -76,8 +80,8 @@ public class FileDownloader {
                     }
                     //Once per cycle, start a thread to perform the download. Do not miss start().
                     ThreadDownload threadDownload = new ThreadDownload(threadId, startIndex, endIndex, address, fileName, threadGroup, this);
-                    threadDownload.start();
-//                    executor.execute(threadDownload);
+//                    threadDownload.start();
+                    executor.execute(threadDownload);
                 }
                 conn.disconnect();
             } else {
