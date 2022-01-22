@@ -10,7 +10,7 @@ public class AppContext {
         theadNumbers = 5;
         downloadPath = "downloads/";
         File directory = new File(downloadPath);
-        if (! directory.exists()){
+        if (!directory.exists()) {
             directory.mkdir();
         }
 

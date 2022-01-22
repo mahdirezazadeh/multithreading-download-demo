@@ -56,21 +56,22 @@ public class FileDownloader {
             System.out.println(headerField);
 
 
-            System.out.println("Total file size:" + fileLength / 1024 / 1024 + "MB");
+            System.out.println("Total file size: " + fileLength / 1024 / 1024 + "MB, " + fileLength + "B");
             int code = conn.getResponseCode();
             if (code == 200) {
                 //Allocate "average" download bytes per thread
                 int blockSize = fileLength / threadCount;
                 //Create a random access stream to locally occupy files
-                RandomAccessFile raf = new RandomAccessFile(fileName, "rw");
+                new RandomAccessFile(fileName, "rw");
+
                 //Important: assume that the file is only 10 bytes, download it in 3 threads, and understand the for loop code
 
                 threadGroup = new ThreadGroup(fileName);
 
                 for (int threadId = 0; threadId < threadCount; threadId++) {
                     int startIndex = threadId * blockSize;
-                    int endIndex = (threadCount + 1) * blockSize - 1;
-                    if (threadId == threadCount) {
+                    int endIndex = (threadId + 1) * blockSize - 1;
+                    if (threadId == threadCount - 1) {
                         endIndex = fileLength - 1;
                     }
                     //Once per cycle, start a thread to perform the download. Do not miss start().

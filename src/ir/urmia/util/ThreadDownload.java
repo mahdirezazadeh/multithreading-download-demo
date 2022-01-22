@@ -19,7 +19,7 @@ public class ThreadDownload extends Thread {
     //The constructor receives three parameters to initialize local variables: thread ID, start position and end position
 
     public ThreadDownload(int threadId, int startIndex, int endIndex, String address, String fileName, ThreadGroup threadGroup, FileDownloader fileDownloader) {
-        super(threadGroup, address+threadId);
+        super(threadGroup, address + threadId);
         this.threadId = threadId;
         this.startIndex = startIndex;
         this.endIndex = endIndex;
@@ -38,9 +38,9 @@ public class ThreadDownload extends Thread {
             System.out.println("thread " + threadId + " Download start location " + startIndex + " End position:" + endIndex);
 
             //Set request header and request some resources to download
-            conn.setRequestProperty("Range ", "bytes:" + startIndex + "-" + endIndex);
+            conn.setRequestProperty("Range", "bytes=" + startIndex + "-" + endIndex);
             //Server response code 206 indicates that some resources are successfully requested
-            if (conn.getResponseCode() < 300) {
+            if (conn.getResponseCode() == 206) {
                 InputStream inputStream = conn.getInputStream();
                 RandomAccessFile raf = new RandomAccessFile(new File(fileName), "rw");
                 //Find write start position
